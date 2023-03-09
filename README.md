@@ -5,6 +5,10 @@ Then I added som additional information like memory usage , disk usage and runni
 
 You might think that fetching all that information every 200 milliseconds is going to be a struggle for a poor little vm? Not really, the program itself consumes maybe 5 Mb of memory and 5% CPU, as you can see from the vis.
 
+Code is messy, im just trying stuff out for now but you can see it live here:
+
+## https://codesandbox.io/p/github/EmilLindfors/coruvis-box/main
+
 
 
 
