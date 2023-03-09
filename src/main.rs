@@ -65,6 +65,28 @@ impl From<Vec<Prcs>> for Processes {
     }
 }
 
+fn processes_from_sys(sys: &System) -> (Prcs, Processes) {
+    let v: Vec<_> = sys.cpus().iter().map(|cpu| cpu.cpu_usage()).collect();
+    let mut p: Vec<Prcs> = sys
+        .processes()
+        .into_iter()
+        .filter(|pr| pr.1.memory() > 0)
+        .map(|pr| Prcs {
+            name: pr.1.name().to_string(),
+            mem: pr.1.memory(),
+            cpu: pr.1.cpu_usage(),
+            disk_read: pr.1.disk_usage().total_read_bytes,
+            disk_written: pr.1.disk_usage().total_written_bytes,
+            status: pr.1.status().to_string(),
+        })
+        .collect();
+    p.sort_by(|a, b| b.mem.partial_cmp(&a.mem).unwrap());
+
+    let coruvis = p.clone().into_iter().find(|v| v.name == "coruvis").unwrap();
+    p.truncate(10);
+    (coruvis, p.into())
+}
+
 #[derive(Clone, Debug)]
 pub struct SysInfo {
     cpu: Vec<f32>,
@@ -73,6 +95,7 @@ pub struct SysInfo {
     processor: (String, Option<usize>, u64),
     name: String,
     os: String,
+    disk: (u64, u64),
 }
 
 impl SysInfo {
@@ -97,6 +120,10 @@ impl SysInfo {
                 "name": self.processor.0,
                 "cores": self.processor.1,
                 "mhz": self.processor.2
+            },
+            "hdd": {
+                "total": self.disk.0,
+                "used": self.disk.1
             }
         })
         .to_string()
@@ -134,48 +161,32 @@ async fn main() {
         let info = sys.long_os_version().unwrap_or("Unknown OS".to_string());
         let host = sys.host_name().unwrap_or("Unknown host".to_string());
         let tm = sys.total_memory();
-        for disk in sys.disks() {
-            println!(
-                "{:?}: {:?}, {:?}, total: {:?}, mount: {:?}",
-                disk.name(),
-                disk.type_(),
-                disk.available_space(),
-                disk.total_space(),
-                disk.mount_point()
-            );
-        }
 
         loop {
             sys.refresh_cpu();
             sys.refresh_memory();
             sys.refresh_processes();
+            sys.refresh_disks();
 
             let v: Vec<_> = sys.cpus().iter().map(|cpu| cpu.cpu_usage()).collect();
-            let mut p: Vec<Prcs> = sys
-                .processes()
-                .into_iter()
-                .filter(|pr| pr.1.memory() > 0)
-                .map(|pr| Prcs {
-                    name: pr.1.name().to_string(),
-                    mem: pr.1.memory(),
-                    cpu: pr.1.cpu_usage(),
-                    disk_read: pr.1.disk_usage().total_read_bytes,
-                    disk_written: pr.1.disk_usage().total_written_bytes,
-                    status: pr.1.status().to_string(),
-                })
-                .collect();
-            p.sort_by(|a, b| b.mem.partial_cmp(&a.mem).unwrap());
+            let (coruvis, rest) = processes_from_sys(&sys);
 
-            let axact = p.iter().find(|v| v.name == "coruvis").unwrap();
+            let disks: Vec<(u64, u64)> = sys
+                .disks()
+                .iter()
+                .filter(|d| d.mount_point().ends_with("coruvis-box"))
+                .map(|d| (d.total_space(), d.available_space()))
+                .collect();
 
             let um = sys.used_memory();
             let _ = tx.send(SysInfo {
                 cpu: v,
-                processes: (axact.clone(), p.into()),
+                processes: (coruvis, rest),
                 mem: (tm, um),
                 processor: cpu_info.clone(),
                 name: host.to_string(),
                 os: info.to_string(),
+                disk: disks[0],
             });
 
             std::thread::sleep(System::MINIMUM_CPU_UPDATE_INTERVAL);
