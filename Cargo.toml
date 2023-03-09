@@ -7,7 +7,8 @@ edition = "2021"
 
 [dependencies]
 axum = { version = "0.6.9", features = ["macros", "ws"] }
+serde = "1.0.154"
 serde_json = "1.0.93"
-sysinfo = "0.28.1"
+sysinfo = { git = "https://github.com/GuillaumeGomez/sysinfo.git", branch = "master", features = ["serde"]}
 tokio = { version = "1.25.0", features = ["full"] }
 tracing-subscriber = { version = "0.3.16", features = ["env-filter"] }
