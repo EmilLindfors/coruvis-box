@@ -134,15 +134,16 @@ async fn main() {
         let info = sys.long_os_version().unwrap_or("Unknown OS".to_string());
         let host = sys.host_name().unwrap_or("Unknown host".to_string());
         let tm = sys.total_memory();
-        //for disk in sys.disks() {
-        //    println!(
-        //        "{:?}: {:?}, {:?}, total: {:?}",
-        //        disk.name(),
-        //        disk.type_(),
-        //        disk.available_space(),
-        //        disk.total_space()
-        //    );
-        //}
+        for disk in sys.disks() {
+            println!(
+                "{:?}: {:?}, {:?}, total: {:?}, mount: {:?}",
+                disk.name(),
+                disk.type_(),
+                disk.available_space(),
+                disk.total_space(),
+                disk.mount_point()
+            );
+        }
 
         loop {
             sys.refresh_cpu();
@@ -165,7 +166,7 @@ async fn main() {
                 .collect();
             p.sort_by(|a, b| b.mem.partial_cmp(&a.mem).unwrap());
 
-            let axact = p.iter().find(|v| v.name == "axact").unwrap();
+            let axact = p.iter().find(|v| v.name == "coruvis").unwrap();
 
             let um = sys.used_memory();
             let _ = tx.send(SysInfo {
