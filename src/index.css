@@ -87,9 +87,9 @@ tbody tr:nth-child(even) {
   background-color: #111617;
 }
 
-tbody tr:nth-child(1) {
+.coruvis {
   font-weight: 600;
-  background-color: #2a9d8f;
+  background-color: #2a9d8f !important;
 }
 
 table {

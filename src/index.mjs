@@ -7,11 +7,13 @@ function App(props) {
   return html`
     <div class="grid">
       <div class="grid-row-lg float">
-        <h2><span class="darker">Host name:</span> ${props.data.inf.host}</h2>
-        <h2><span class="darker">Os:</span> ${props.data.inf.os}</h3>
+        <h2><span class="darker">Host name:</span> ${
+          props.data.general.host
+        }</h2>
+        <h2><span class="darker">Os:</span> ${props.data.general.os}</h3>
         <h2>
-          <span class="darker">CPU:</span> ${props.data.pss.cores} Core
-          ${props.data.pss.name} @ ${props.data.pss.mhz} MHz
+          <span class="darker">CPU:</span> ${props.data.general.cpu.cores} Core
+          ${props.data.general.cpu.name} @ ${props.data.general.cpu.mhz} MHz
         </h2>
       </div>
 
@@ -26,6 +28,7 @@ function App(props) {
       </div>
       <div class="grid-row">
        <h3>Memory usage</h3>
+       ${JSON.stringify(props.data.mem)}
         <div class="bar">
           <div
             class="bar-inner"
@@ -34,8 +37,8 @@ function App(props) {
             }%"
           ></div>
           <label
-            >${(props.data.mem.used / 1000000).toFixed(1)}/
-            ${(props.data.mem.total / 1000000).toFixed(1)} Mb</label
+            >${props.data.mem.used} /
+            ${props.data.mem.total} Mb</label
           >
         </div>
       </div>
@@ -49,8 +52,8 @@ function App(props) {
             }%"
           ></div>
           <label
-            >${(props.data.hdd.used / 1000000).toFixed(1)}/
-            ${(props.data.hdd.total / 1000000).toFixed(1)} Mb</label
+            >${props.data.hdd.used}/
+            ${props.data.hdd.total} Mb</label
           >
         </div>
       </div>
@@ -67,27 +70,13 @@ function App(props) {
             </tr>
           </thead>
           <tbody>
-            <tr class="first-row">
-              <td>${props.data.prc.this.name}</td>
-              <td>${(props.data.prc.this.mem / 1000000).toFixed(1)} Mb</td>
-              <td>${props.data.prc.this.cpu.toFixed(2)}%</td>
-              <td>
-                ${(props.data.prc.this.readBytes / 1000000).toFixed(1)} /
-                ${(props.data.prc.this.writtenBytes / 1000000).toFixed(1)} Mb
-              </td>
-              <td>${props.data.prc.this.status}</td>
-            </tr>
-            ${props.data.prc.others.map((pr) => {
-              return html`<tr>
-                <td>${pr.name}</td>
-                <td>${(pr.mem / 1000000).toFixed(1)} Mb</td>
-                <td>${pr.cpu.toFixed(2)}%</td>
-
-                <td>
-                  ${(pr.readBytes / 1000000).toFixed(1)} /
-                  ${(pr.writtenBytes / 1000000).toFixed(1)}
-                </td>
-                <td>${pr.status}</td>
+            ${props.data.prc.map((pr) => {
+              return html`<tr class=${pr[0][1] && "coruvis"}>
+                <td>${pr[1][1]}</td>
+                <td>${parseFloat(pr[2][1])} Mb</td>
+                <td>${parseFloat(pr[3][1]).toFixed(2)}%</td>
+                <td>${pr[4][1]} / ${pr[5][1]}</td>
+                <td>${pr[6][1]}</td>
               </tr>`;
             })}
           </tbody>
