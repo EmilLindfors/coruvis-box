@@ -4,6 +4,10 @@
   font-family: "Roboto", sans-serif;
 }
 
+h2 {
+  padding: 0;
+}
+
 body {
   background: #0f0f0f;
   color: white;
@@ -12,7 +16,7 @@ body {
 .grid {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
+  grid-template-rows: 50px 150px 1fr;
 }
 .grid-row {
   border: 1 px solid white;
@@ -22,6 +26,7 @@ body {
   grid-column-start: span 3;
   border: 1 px solid white;
   border-radius: 5px;
+  height: fit-content;
 }
 .bar {
   background: #264653;
@@ -36,6 +41,15 @@ body {
   justify-content: center;
 
   position: relative;
+}
+
+.darker {
+  color: #264653;
+}
+
+.float {
+  display: flex;
+  gap: 10px;
 }
 
 .bar label {
@@ -65,8 +79,32 @@ body {
   font-weight: 600;
 }
 
-.first-row {
+tbody tr:nth-child(odd) {
+  background-color: #1e2526;
+}
+
+tbody tr:nth-child(even) {
+  background-color: #111617;
+}
+
+tbody tr:nth-child(1) {
   font-weight: 600;
-  border-bottom: 1px solid #264653;
-  padding-bottom: 1em;
+  background-color: #2a9d8f;
+}
+
+table {
+  table-layout: fixed;
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #264653;
+}
+
+thead {
+  background-color: #264653;
+  text-align: left;
+}
+
+th,
+td {
+  padding: 10px;
 }

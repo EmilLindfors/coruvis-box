@@ -6,12 +6,17 @@ const html = htm.bind(h);
 function App(props) {
   return html`
     <div class="grid">
-      <div class="grid-row-lg">
-        <h2>${props.data.inf.host}</h2>
-        <h3>${props.data.inf.os}</h3>
+      <div class="grid-row-lg float">
+        <h2><span class="darker">Host name:</span> ${props.data.inf.host}</h2>
+        <h2><span class="darker">Os:</span> ${props.data.inf.os}</h3>
+        <h2>
+          <span class="darker">CPU:</span> ${props.data.pss.cores} Core
+          ${props.data.pss.name} @ ${props.data.pss.mhz} MHz
+        </h2>
       </div>
-      <div class="grid-row">${JSON.stringify(props.data.pss)}</div>
+
       <div class="grid-row">
+      <h3>CPU virtual core usage</h3>
         ${props.data.cpu.map((cpu) => {
           return html`<div class="bar">
             <div class="bar-inner" style="width: ${cpu}%"></div>
@@ -20,11 +25,13 @@ function App(props) {
         })}
       </div>
       <div class="grid-row">
+       <h3>Memory usage</h3>
         <div class="bar">
           <div
             class="bar-inner"
-            style="width: ${(props.data.mem.used / props.data.mem.total) *
-            100}%"
+            style="width: ${
+              (props.data.mem.used / props.data.mem.total) * 100
+            }%"
           ></div>
           <label
             >${(props.data.mem.used / 1000000).toFixed(1)}/
@@ -32,7 +39,23 @@ function App(props) {
           >
         </div>
       </div>
+        <div class="grid-row">
+       <h3>Disk usage</h3>
+        <div class="bar">
+          <div
+            class="bar-inner"
+            style="width: ${
+              (props.data.hdd.used / props.data.hdd.total) * 100
+            }%"
+          ></div>
+          <label
+            >${(props.data.hdd.used / 1000000).toFixed(1)}/
+            ${(props.data.hdd.total / 1000000).toFixed(1)} Mb</label
+          >
+        </div>
+      </div>
       <div class="grid-row-lg">
+        <h3>Top 10 processes sorted by memory usage</h3>
         <table>
           <thead>
             <tr>
