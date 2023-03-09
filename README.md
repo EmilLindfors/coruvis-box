@@ -1,5 +1,7 @@
 # Codesandbox Rust Visualization
 
+![Screenshot from codesandbox](/screenshot.PNG?raw=true "Screenshot")
+
 I watched Fasterthanlime's Video tutorial on displaying realtime cpu stats with rust and axum and wanted to try it out in codesandbox, so i forked it and opened it.
 Then I added som additional information like memory usage , disk usage and running tasks. 
 
